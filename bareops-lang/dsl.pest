@@ -1,0 +1,23 @@
+alpha        =  { 'a'..'z' | 'A'..'Z' }
+digit        =  { '0'..'9' }
+open_curly   =  _{ "{" }
+closed_curly =  _{ "}" }
+WS           = _{ " " | "\t" } // whitespace
+WSN          = _{ " " | "\t" | NEWLINE } // whitespace including newlines
+DOUBLE_QUOTE = _{ "\"" }
+UNDERSCORE   = _{ "_" }
+
+ident        =  { (!digit | "_") ~ (alpha | digit | UNDERSCORE)* }
+value        =  { (alpha | digit | UNDERSCORE)* }
+quoted_value = _{ DOUBLE_QUOTE ~ value ~ DOUBLE_QUOTE }
+
+plugin_option  =  { WSN* ~ ident ~ ":" ~ WSN* ~ quoted_value ~ WS* ~ NEWLINE } // mandatory newline
+plugin_body     = _{ WSN* ~ open_curly ~ WSN* ~ plugin_option* ~ WSN* ~ closed_curly }
+
+task_plugin     = { WSN* ~ ident ~ plugin_body }
+task_tag        = { quoted_value }
+task_tags       = _{ "tags" ~ WS* ~ ":" ~ WSN* ~ "[" ~ WSN* ~ task_tag ~ (WSN* ~ "," ~ WSN* ~ task_tag)* ~ WSN* ~ "]" }
+task_body       = _{ WSN* ~ open_curly ~ WSN* ~ task_tags* ~ task_plugin ~ WSN* ~ closed_curly }
+task_name       = { WSN* ~ quoted_value }
+task            = { WSN* ~ "task" ~ task_name ~ task_body }
+tasks           = _{ task* ~ WSN* ~ EOI }
