@@ -1,5 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-  "bareops-main"
+    "bareops-main",
+    "bareops-lang"
 ]

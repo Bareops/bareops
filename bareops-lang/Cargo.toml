@@ -1,0 +1,10 @@
+[package]
+name = "bareops-lang"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+miette = { version = "7.4", features = ["fancy"] }
+pest = { version = "2.7", features = ["miette-error"] }
+pest_derive = "2.7"
+thiserror = "2.0"
