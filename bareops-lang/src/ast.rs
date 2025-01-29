@@ -129,6 +129,10 @@ impl Identifier {
     pub fn new(name: &str) -> Self {
         Identifier(name.to_owned())
     }
+
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
 }
 
 impl From<&str> for Identifier {

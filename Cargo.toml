@@ -2,5 +2,14 @@
 resolver = "2"
 members = [
     "bareops-main",
-    "bareops-lang"
-]
+    "bareops-lang",
+    "examples/hello-world-plugin"
+, "bareops-plugin-api"]
+
+
+[profile.release]
+codegen-units = 1
+opt-level = "s"
+debug = false
+strip = true
+lto = true

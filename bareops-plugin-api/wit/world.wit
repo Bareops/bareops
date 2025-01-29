@@ -1,0 +1,5 @@
+package bareops:plugin;
+
+world plugin {
+    export run: func(a: s32, b: s32) -> s32;
+}

@@ -1,0 +1,139 @@
+use std::path::{Path, PathBuf};
+use wasmtime::{Config, Engine, Store};
+
+use crate::error::BareopsError;
+use thiserror::Error;
+use wasmtime::component::{Component, Linker, ResourceTable, Val};
+use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
+
+#[derive(Error, Debug)]
+pub enum WasmRuntimeError {
+    #[error("Failed create engine")]
+    EngineCreation(String),
+    #[error("Failed to run component")]
+    ComponentExecution(String),
+}
+
+struct WasmState {
+    ctx: WasiCtx,
+    table: ResourceTable,
+}
+
+impl WasiView for WasmState {
+    fn table(&mut self) -> &mut ResourceTable {
+        &mut self.table
+    }
+    fn ctx(&mut self) -> &mut WasiCtx {
+        &mut self.ctx
+    }
+}
+
+pub struct WasmRuntime<'a> {
+    engine: Engine,
+    paths: Vec<&'a Path>,
+    store: Store<WasmState>,
+    linker: Linker<WasmState>,
+}
+
+impl From<WasmRuntimeError> for BareopsError {
+    fn from(err: WasmRuntimeError) -> Self {
+        dbg!(&err);
+        match err {
+            WasmRuntimeError::EngineCreation(s) => BareopsError::Init(s),
+            WasmRuntimeError::ComponentExecution(s) => BareopsError::TaskbookExecution(s),
+        }
+    }
+}
+
+impl<'a> WasmRuntime<'a> {
+    pub fn new(config: Config) -> Result<Self, WasmRuntimeError> {
+        let engine =
+            Engine::new(&config).map_err(|e| WasmRuntimeError::EngineCreation(e.to_string()))?;
+
+        let mut linker = Linker::<WasmState>::new(&engine);
+        wasmtime_wasi::add_to_linker_async(&mut linker)
+            .map_err(|e| WasmRuntimeError::EngineCreation(e.to_string()))?;
+
+        let mut builder = WasiCtxBuilder::new();
+        builder.inherit_stdio();
+
+        let store = Store::new(
+            &engine,
+            WasmState {
+                ctx: builder.build(),
+                table: ResourceTable::new(),
+            },
+        );
+
+        Ok(WasmRuntime {
+            engine,
+            linker,
+            store,
+            paths: Vec::new(),
+        })
+    }
+
+    pub fn set_search_paths(&mut self, paths: &'a [impl AsRef<Path>]) {
+        self.paths = paths.iter().map(|p| p.as_ref()).collect();
+    }
+
+    pub async fn run_component(&mut self, name: &str) -> Result<(), WasmRuntimeError> {
+        let path = self.find_file(format!("{}.wasm", name)).ok_or(
+            WasmRuntimeError::ComponentExecution(format!("Cannot find component {}", name)),
+        )?;
+        let component = Component::from_file(&self.engine, path)
+            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+
+        let instance = self
+            .linker
+            .instantiate_async(&mut self.store, &component)
+            .await
+            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+
+        let plugin = instance.get_func(&mut self.store, "run").ok_or(
+            WasmRuntimeError::ComponentExecution("Failed to get plugin entry point".to_string()),
+        )?;
+
+        let args = [Val::S32(5), Val::S32(15)];
+        let mut result = [Val::S32(0)];
+        plugin
+            .call_async(&mut self.store, &args, &mut result)
+            .await
+            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))
+    }
+
+    fn find_file(&self, search_filename: String) -> Option<PathBuf> {
+        self.paths
+            .iter()
+            .filter(|path| path.is_dir())
+            .find(|path| {
+                let Ok(entries) = path.read_dir() else {
+                    return false;
+                };
+                for entry in entries {
+                    match entry {
+                        Ok(entry) if entry.path().is_file() => {
+                            if let Some(filename) = entry.file_name().to_str() {
+                                if search_filename == filename {
+                                    return true;
+                                }
+                            }
+                        }
+                        _ => (),
+                    }
+                }
+                false
+            })
+            .map(|p| p.join(search_filename))
+    }
+}
+
+impl Default for WasmRuntime<'_> {
+    fn default() -> Self {
+        let mut config = Config::new();
+        config.async_support(true);
+        config.wasm_component_model(true);
+
+        WasmRuntime::new(config).expect("Create default engine")
+    }
+}
