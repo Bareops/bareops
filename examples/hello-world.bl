@@ -1,0 +1,6 @@
+task "hello-world" {
+    tags: ["demo"]
+
+    bareops_hello_world_plugin {
+    }
+}

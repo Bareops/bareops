@@ -8,7 +8,7 @@ DOUBLE_QUOTE = _{ "\"" }
 UNDERSCORE   = _{ "_" }
 
 ident        =  { (!digit | "_") ~ (alpha | digit | UNDERSCORE)* }
-value        =  { (alpha | digit | UNDERSCORE)* }
+value        =  { (alpha | digit | UNDERSCORE | DASH )* }
 quoted_value = _{ DOUBLE_QUOTE ~ value ~ DOUBLE_QUOTE }
 
 plugin_option  =  { WSN* ~ ident ~ ":" ~ WSN* ~ quoted_value ~ WS* ~ NEWLINE } // mandatory newline
