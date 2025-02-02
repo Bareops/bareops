@@ -93,7 +93,10 @@ impl<'a> WasmRuntime<'a> {
             self.components.insert(name.to_string(), component);
         }
         let Some(component) = self.components.get(name) else {
-            return Err(WasmRuntimeError::ComponentExecution(format!("Cannot compile component {:?}", name)));
+            return Err(WasmRuntimeError::ComponentExecution(format!(
+                "Cannot compile component {:?}",
+                name
+            )));
         };
 
         let instance = self
