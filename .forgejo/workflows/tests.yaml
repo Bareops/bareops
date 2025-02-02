@@ -7,6 +7,9 @@ jobs:
   tests:
     runs-on: docker
     steps:
+      - name: Install capnproto
+        run: apt update && apt install -yy capnproto
+
       - name: Check out repository code
         uses: https://code.forgejo.org/actions/checkout@v3
 
