@@ -19,7 +19,6 @@ pub struct ParseFailure {
     help: String,
 }
 
-
 #[derive(Parser)]
 #[grammar = "dsl.pest"]
 struct DSLParser;
@@ -139,7 +138,6 @@ fn create_help(err: Error<Rule>) -> String {
     }
 }
 
-
 pub fn parse(source: &NamedSource<String>) -> Result<Vec<Task>> {
     match DSLParser::parse(Rule::tasks, source.inner()) {
         Ok(pairs) => build_ast(pairs, source),
@@ -159,9 +157,9 @@ pub fn parse(source: &NamedSource<String>) -> Result<Vec<Task>> {
 
 #[cfg(test)]
 mod tests {
-    use log::error;
     use super::*;
     use crate::ast::{Identifier, PluginOption, Tag, Value};
+    use log::error;
 
     #[test]
     fn test_empty() {

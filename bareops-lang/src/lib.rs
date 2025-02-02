@@ -1,5 +1,5 @@
 mod ast;
 mod parser;
 
-pub use parser::parse;
 pub use ast::Task;
+pub use parser::parse;

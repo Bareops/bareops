@@ -52,7 +52,10 @@ async fn main() -> miette::Result<()> {
     }
 }
 
-async fn run_tasks(tasks: Vec<Task>, search_paths: &[impl AsRef<Path>]) -> Result<(), BareopsError> {
+async fn run_tasks(
+    tasks: Vec<Task>,
+    search_paths: &[impl AsRef<Path>],
+) -> Result<(), BareopsError> {
     let mut config = Config::new();
     config.async_support(true);
     config.wasm_component_model(true);
