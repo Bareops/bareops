@@ -3,8 +3,10 @@ resolver = "2"
 members = [
     "bareops-main",
     "bareops-lang",
-    "examples/hello-world-plugin"
-, "bareops-plugin-api"]
+    "bareops-conn",
+    "bareops-plugin-api",
+    "examples/hello-world-plugin",
+]
 
 
 [profile.release]

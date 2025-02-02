@@ -1,0 +1,14 @@
+[package]
+name = "bareops-conn"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+capnp = "0.20.3"
+capnp-rpc = "0.20.3"
+ssh2 = "0.9.5"
+thiserror = "2.0.11"
+tokio = { version = "1.43.0", features = ["full"] }
+
+[build-dependencies]
+capnpc = "0.20.1"
