@@ -1,0 +1,8 @@
+[package]
+name = "bareops-integration-test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bareops-lang = { path = "../bareops-lang" }
+miette = { version = "7.5", features = ["fancy"] }
