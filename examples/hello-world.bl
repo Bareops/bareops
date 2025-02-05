@@ -4,3 +4,10 @@ task "hello-world" {
     bareops_hello_world_plugin {
     }
 }
+
+task "hello-world-repeat" {
+    tags: ["demo"]
+
+    bareops_hello_world_plugin {
+    }
+}

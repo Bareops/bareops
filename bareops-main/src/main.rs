@@ -12,6 +12,8 @@ use wasmtime::Config;
 
 #[tokio::main]
 async fn main() -> miette::Result<()> {
+    env_logger::init();
+
     let cli = cli::parse_cmdline();
 
     let matches = cli.get_matches();

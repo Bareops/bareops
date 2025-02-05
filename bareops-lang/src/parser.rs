@@ -159,6 +159,7 @@ pub fn parse(source: &NamedSource<String>) -> Result<Vec<Task>> {
 
 #[cfg(test)]
 mod tests {
+    use log::error;
     use super::*;
     use crate::ast::{Identifier, PluginOption, Tag, Value};
 
@@ -190,7 +191,7 @@ mod tests {
         let tasks = parse(&NamedSource::new("test", input.to_string()));
         assert!(tasks.is_err(), "Expected failure");
         let err = tasks.unwrap_err();
-        eprintln!("{:?}", err);
+        error!("{:?}", err);
     }
 
     #[test]

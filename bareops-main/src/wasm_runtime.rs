@@ -1,3 +1,5 @@
+use log::debug;
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use wasmtime::{Config, Engine, Store};
 
@@ -33,6 +35,7 @@ pub struct WasmRuntime<'a> {
     paths: Vec<&'a Path>,
     store: Store<WasmState>,
     linker: Linker<WasmState>,
+    components: HashMap<String, Component>,
 }
 
 impl From<WasmRuntimeError> for BareopsError {
@@ -70,6 +73,7 @@ impl<'a> WasmRuntime<'a> {
             linker,
             store,
             paths: Vec::new(),
+            components: HashMap::new(),
         })
     }
 
@@ -81,12 +85,20 @@ impl<'a> WasmRuntime<'a> {
         let path = self.find_file(format!("{}.wasm", name)).ok_or(
             WasmRuntimeError::ComponentExecution(format!("Cannot find component {}", name)),
         )?;
-        let component = Component::from_file(&self.engine, path)
-            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+
+        if !self.components.contains_key(name) {
+            debug!("Compiling wasm component {:?}", path);
+            let component = Component::from_file(&self.engine, &path)
+                .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+            self.components.insert(name.to_string(), component);
+        }
+        let Some(component) = self.components.get(name) else {
+            return Err(WasmRuntimeError::ComponentExecution(format!("Cannot compile component {:?}", name)));
+        };
 
         let instance = self
             .linker
-            .instantiate_async(&mut self.store, &component)
+            .instantiate_async(&mut self.store, component)
             .await
             .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
 
