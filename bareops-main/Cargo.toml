@@ -1,5 +1,5 @@
 [package]
-name = "bareops-main"
+name = "bareops"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,4 +11,5 @@ wasmtime-wasi = "29.0"
 tokio = { version = "1.43", features = ["rt", "rt-multi-thread", "macros"] }
 thiserror = "2.0"
 clap = "4.5"
-log = "0.4.25"
+log = "0.4"
+env_logger = "0.11"
