@@ -167,6 +167,7 @@ name = "bareops"
 version = "0.1.0"
 dependencies = [
  "bareops-lang",
+ "bareops-plugin-api",
  "clap",
  "env_logger",
  "log",
@@ -175,6 +176,13 @@ dependencies = [
  "tokio",
  "wasmtime",
  "wasmtime-wasi",
+]
+
+[[package]]
+name = "bareops-azure-plugin"
+version = "0.1.0"
+dependencies = [
+ "bareops-plugin-api",
 ]
 
 [[package]]

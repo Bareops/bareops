@@ -1,5 +1,20 @@
 package bareops:plugin;
 
 world plugin {
-    export run: func(a: s32, b: s32) -> s32;
+    variant plugin-type {
+        string-t(string),
+        int32-t(s32),
+        int64-t(s64),
+        uint32-t(u32),
+        uint64-t(u64),
+        float32-t(f32),
+        float64-t(f64),
+    }
+
+    record plugin-option {
+        key: string,
+        value: plugin-type,
+    }
+
+    export run: func(options: list<plugin-option>) -> result<plugin-type, string>;
 }

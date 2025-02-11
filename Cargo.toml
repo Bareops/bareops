@@ -1,10 +1,12 @@
 [workspace]
-resolver = "2"
 members = [
     "bareops-main",
     "bareops-lang",
-    "examples/hello-world-plugin"
-, "bareops-plugin-api"]
+    "bareops-plugin-api",
+    "examples/hello-world-plugin",
+    "examples/azure-plugin",
+]
+resolver = "2"
 
 
 [profile.release]

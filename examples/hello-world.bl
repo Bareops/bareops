@@ -2,6 +2,16 @@ task "hello-world" {
     tags: ["demo"]
 
     bareops_hello_world_plugin {
+        planet: "Earth"
+    }
+}
+
+task "hello-azure" {
+    tags: ["demo"]
+
+    bareops_azure_plugin {
+        client_id: "some-client"
+        client_secret: "some-secret"
     }
 }
 
@@ -9,5 +19,6 @@ task "hello-world-repeat" {
     tags: ["demo"]
 
     bareops_hello_world_plugin {
+        planet: "Mars"
     }
 }

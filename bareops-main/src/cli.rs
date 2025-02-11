@@ -26,7 +26,7 @@ pub fn parse_cmdline() -> Command {
                 clap::Arg::new("path")
                     .num_args(1)
                     .action(ArgAction::Append)
-                    .required(false)
+                    .required(true)
                     .value_parser(clap::value_parser!(PathBuf))
                     .short('p')
                     .long("path")
