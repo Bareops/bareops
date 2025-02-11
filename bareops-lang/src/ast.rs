@@ -120,6 +120,14 @@ impl PluginOption {
     pub fn new(name: Identifier, value: Value) -> Self {
         PluginOption { name, value }
     }
+
+    pub fn name(&self) -> &Identifier {
+        &self.name
+    }
+
+    pub fn value(&self) -> &Value {
+        &self.value
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -153,6 +161,12 @@ impl Value {
 impl From<&str> for Value {
     fn from(value: &str) -> Self {
         Value::new(value)
+    }
+}
+
+impl From<&Value> for String {
+    fn from(value: &Value) -> Self {
+        value.0.to_owned()
     }
 }
 

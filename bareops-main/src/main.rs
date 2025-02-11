@@ -66,7 +66,9 @@ async fn run_tasks(
     runtime.set_search_paths(search_paths);
 
     for task in tasks {
-        runtime.run_component(task.plugin().name().as_str()).await?
+        runtime
+            .run_component(task.plugin().name().as_str(), task.plugin().options())
+            .await?
     }
     Ok(())
 }

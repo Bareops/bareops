@@ -1,0 +1,10 @@
+setup:
+    cargo install cargo-component
+
+build: build-hello-world build-azure
+
+build-hello-world:
+    cd hello-world-plugin && just build
+
+build-azure:
+    cd azure-plugin && just build

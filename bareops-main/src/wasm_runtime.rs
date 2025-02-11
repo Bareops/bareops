@@ -1,11 +1,11 @@
+use crate::error::BareopsError;
+use bareops_lang::{Identifier, PluginOption, Value};
 use log::debug;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use wasmtime::{Config, Engine, Store};
-
-use crate::error::BareopsError;
 use thiserror::Error;
 use wasmtime::component::{Component, Linker, ResourceTable, Val};
+use wasmtime::{Config, Engine, Store};
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
 #[derive(Error, Debug)]
@@ -81,15 +81,20 @@ impl<'a> WasmRuntime<'a> {
         self.paths = paths.iter().map(|p| p.as_ref()).collect();
     }
 
-    pub async fn run_component(&mut self, name: &str) -> Result<(), WasmRuntimeError> {
+    pub async fn run_component(
+        &mut self,
+        name: &str,
+        options: &[PluginOption],
+    ) -> Result<(), WasmRuntimeError> {
         let path = self.find_file(format!("{}.wasm", name)).ok_or(
             WasmRuntimeError::ComponentExecution(format!("Cannot find component {}", name)),
         )?;
 
         if !self.components.contains_key(name) {
             debug!("Compiling wasm component {:?}", path);
-            let component = Component::from_file(&self.engine, &path)
-                .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+            let component = Component::from_file(&self.engine, &path).map_err(|e| {
+                WasmRuntimeError::ComponentExecution(format!("Cannot read component file: {}", e))
+            })?;
             self.components.insert(name.to_string(), component);
         }
         let Some(component) = self.components.get(name) else {
@@ -103,18 +108,30 @@ impl<'a> WasmRuntime<'a> {
             .linker
             .instantiate_async(&mut self.store, component)
             .await
-            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))?;
+            .map_err(|e| {
+                WasmRuntimeError::ComponentExecution(format!("Cannot instantiate component: {}", e))
+            })?;
 
         let plugin = instance.get_func(&mut self.store, "run").ok_or(
             WasmRuntimeError::ComponentExecution("Failed to get plugin entry point".to_string()),
         )?;
 
-        let args = [Val::S32(5), Val::S32(15)];
+        let args = [Val::List(
+            options
+                .iter()
+                .map(plugin_option_to_val)
+                .collect::<Result<Vec<Val>, _>>()?,
+        )];
         let mut result = [Val::S32(0)];
         plugin
             .call_async(&mut self.store, &args, &mut result)
             .await
-            .map_err(|e| WasmRuntimeError::ComponentExecution(e.to_string()))
+            .map_err(|e| {
+                WasmRuntimeError::ComponentExecution(format!(
+                    "Cannot call component function: {}",
+                    e
+                ))
+            })
     }
 
     fn find_file(&self, search_filename: String) -> Option<PathBuf> {
@@ -151,4 +168,25 @@ impl Default for WasmRuntime<'_> {
 
         WasmRuntime::new(config).expect("Create default engine")
     }
+}
+
+fn plugin_option_to_val(plugin_option: &PluginOption) -> Result<Val, WasmRuntimeError> {
+    Ok(Val::Record(vec![
+        ("key".to_owned(), identifier_to_val(plugin_option.name())?),
+        (
+            "value".to_owned(),
+            Val::Variant(
+                "string-t".to_owned(),
+                Some(Box::new(value_to_val(plugin_option.value())?)),
+            ),
+        ),
+    ]))
+}
+
+fn identifier_to_val(identifier: &Identifier) -> Result<Val, WasmRuntimeError> {
+    Ok(Val::String(identifier.as_str().to_owned()))
+}
+
+fn value_to_val(value: &Value) -> Result<Val, WasmRuntimeError> {
+    Ok(Val::String(value.into()))
 }
