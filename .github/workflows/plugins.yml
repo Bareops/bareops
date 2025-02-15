@@ -1,0 +1,24 @@
+name: Build plugin examples
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: taiki-e/install-action@just
+    - uses: cargo-bins/cargo-binstall@main
+    - name: Setup
+      run: cargo binstall cargo-component
+    - name: Build
+      run: just build-examples
