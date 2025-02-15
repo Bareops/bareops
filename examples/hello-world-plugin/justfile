@@ -1,2 +1,4 @@
+set windows-shell := ["powershell", "-Command"]
+
 build:
     cargo component build --release

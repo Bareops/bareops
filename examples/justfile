@@ -1,10 +1,9 @@
-setup:
-    cargo install cargo-component
+set windows-shell := ["powershell", "-Command"]
 
 build: build-hello-world build-azure
 
 build-hello-world:
-    cd hello-world-plugin && just build
+    just hello-world-plugin/build
 
 build-azure:
-    cd azure-plugin && just build
+    just azure-plugin/build
