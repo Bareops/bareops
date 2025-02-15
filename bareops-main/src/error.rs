@@ -5,6 +5,8 @@ use thiserror::Error;
 pub enum BareopsError {
     #[error("Initialisation: {0}")]
     Init(String),
+    #[error("Invalid state: {0}")]
+    InvalidState(String), // should be used to indicate an error that should typically not be possible
     #[error("Taskbook parsing: {0}")]
     TaskbookParse(String),
     #[error("Taskbook execution: {0}")]
