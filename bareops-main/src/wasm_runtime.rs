@@ -1,6 +1,6 @@
 use crate::error::BareopsError;
 use bareops_lang::{Identifier, PluginOption, Value};
-use log::debug;
+use log::{debug, trace};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -40,7 +40,6 @@ pub struct WasmRuntime<'a> {
 
 impl From<WasmRuntimeError> for BareopsError {
     fn from(err: WasmRuntimeError) -> Self {
-        dbg!(&err);
         match err {
             WasmRuntimeError::EngineCreation(s) => BareopsError::Init(s),
             WasmRuntimeError::ComponentExecution(s) => BareopsError::TaskbookExecution(s),
@@ -86,7 +85,7 @@ impl<'a> WasmRuntime<'a> {
         name: &str,
         options: &[PluginOption],
     ) -> Result<(), WasmRuntimeError> {
-        let path = self.find_file(format!("{}.wasm", name)).ok_or(
+        let path = find_file(&format!("{}.wasm", name), &self.paths).ok_or(
             WasmRuntimeError::ComponentExecution(format!("Cannot find component {}", name)),
         )?;
 
@@ -133,31 +132,6 @@ impl<'a> WasmRuntime<'a> {
                 ))
             })
     }
-
-    fn find_file(&self, search_filename: String) -> Option<PathBuf> {
-        self.paths
-            .iter()
-            .filter(|path| path.is_dir())
-            .find(|path| {
-                let Ok(entries) = path.read_dir() else {
-                    return false;
-                };
-                for entry in entries {
-                    match entry {
-                        Ok(entry) if entry.path().is_file() => {
-                            if let Some(filename) = entry.file_name().to_str() {
-                                if search_filename == filename {
-                                    return true;
-                                }
-                            }
-                        }
-                        _ => (),
-                    }
-                }
-                false
-            })
-            .map(|p| p.join(search_filename))
-    }
 }
 
 impl Default for WasmRuntime<'_> {
@@ -189,4 +163,46 @@ fn identifier_to_val(identifier: &Identifier) -> Result<Val, WasmRuntimeError> {
 
 fn value_to_val(value: &Value) -> Result<Val, WasmRuntimeError> {
     Ok(Val::String(value.into()))
+}
+
+// TODO: move this also into a file handling component
+fn find_file(search_filename: &str, path: &[&Path]) -> Option<PathBuf> {
+    trace!("Searching for file {} in {:?}", search_filename, path);
+    path.iter()
+        .filter(|path| path.is_dir())
+        .find(|path| {
+            let Ok(entries) = path.read_dir() else {
+                return false;
+            };
+            for entry in entries {
+                match entry {
+                    Ok(entry) if entry.path().is_file() => {
+                        if let Some(filename) = entry.file_name().to_str() {
+                            if search_filename == filename {
+                                return true;
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            false
+        })
+        .map(|p| p.join(search_filename))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::str::FromStr;
+
+    #[test]
+    fn test_find_file() {
+        let mut path = PathBuf::from_str(std::env::temp_dir().to_str().unwrap()).unwrap();
+        let tmp = tempfile::Builder::new().suffix(".wasm").tempfile().unwrap();
+        let filename = tmp.as_ref().file_name().unwrap().to_str().unwrap();
+        let result = find_file(filename, &[path.as_path()]).unwrap();
+        path.push(filename);
+        assert_eq!(result, path);
+    }
 }
