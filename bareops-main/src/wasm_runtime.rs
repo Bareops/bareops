@@ -4,9 +4,9 @@ use log::{debug, trace};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
-use wasmtime::component::{Component, Linker, ResourceTable, Val};
+use wasmtime::component::{Component, Linker, Val};
 use wasmtime::{Config, Engine, Store};
-use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
+use wasmtime_wasi::{IoView, ResourceTable, WasiCtx, WasiCtxBuilder, WasiView};
 
 #[derive(Error, Debug)]
 pub enum WasmRuntimeError {
@@ -21,10 +21,13 @@ struct WasmState {
     table: ResourceTable,
 }
 
-impl WasiView for WasmState {
-    fn table(&mut self) -> &mut ResourceTable {
+impl IoView for WasmState {
+    fn table(&mut self) -> &mut wasmtime_wasi::ResourceTable {
         &mut self.table
     }
+}
+
+impl WasiView for WasmState {
     fn ctx(&mut self) -> &mut WasiCtx {
         &mut self.ctx
     }
