@@ -8,7 +8,7 @@ bareops-lang = { path = "../bareops-lang" }
 miette = { version = "7.5", features = ["fancy"] }
 wasmtime = "29.0"
 wasmtime-wasi = "29.0"
-tokio = { version = "1.43", features = ["rt", "rt-multi-thread", "macros"] }
+tokio = { version = "1.44", features = ["rt", "rt-multi-thread", "macros"] }
 thiserror = "2.0"
 clap = "4.5"
 log = "0.4"
