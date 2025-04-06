@@ -6,9 +6,10 @@ WS           = _{ " " | "\t" } // whitespace
 WSN          = _{ " " | "\t" | NEWLINE } // whitespace including newlines
 DOUBLE_QUOTE = _{ "\"" }
 UNDERSCORE   = _{ "_" }
+SLASH        = _{ "/" }
 
 ident        =  { (!digit | "_") ~ (alpha | digit | UNDERSCORE)* }
-value        =  { (alpha | digit | UNDERSCORE | DASH )* }
+value        =  { (alpha | digit | UNDERSCORE | DASH | SLASH )* }
 quoted_value = _{ DOUBLE_QUOTE ~ value ~ DOUBLE_QUOTE }
 
 plugin_option  =  { WSN* ~ ident ~ ":" ~ WSN* ~ quoted_value ~ WS* ~ NEWLINE } // mandatory newline
