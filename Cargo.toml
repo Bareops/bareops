@@ -5,6 +5,7 @@ members = [
     "bareops-plugin-api",
     "examples/hello-world-plugin",
     "examples/azure-plugin",
+    "bareops-conn", "bareops-integration-test",
 ]
 resolver = "2"
 
