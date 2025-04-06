@@ -7,7 +7,7 @@ edition = "2021"
 bareops-lang = { path = "../bareops-lang" }
 miette = { version = "7.5", features = ["fancy"] }
 wasmtime = "29.0"
-wasmtime-wasi = "29.0"
+wasmtime-wasi = "31.0"
 tokio = { version = "1.44", features = ["rt", "rt-multi-thread", "macros"] }
 thiserror = "2.0"
 clap = "4.5"
