@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 miette = { version = "7.5", features = ["fancy"] }
-pest = { version = "2.7", features = ["miette-error"] }
-pest_derive = "2.7"
+pest = { version = "2.8", features = ["miette-error"] }
+pest_derive = "2.8"
 thiserror = "2.0"
-log = "0.4.26"
+log = "0.4.27"
