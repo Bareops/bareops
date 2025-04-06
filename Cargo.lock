@@ -166,6 +166,7 @@ dependencies = [
 name = "bareops"
 version = "0.1.0"
 dependencies = [
+ "bareops-conn",
  "bareops-lang",
  "clap",
  "env_logger",
@@ -202,6 +203,14 @@ name = "bareops-hello-world-plugin"
 version = "0.1.0"
 dependencies = [
  "bareops-plugin-api",
+]
+
+[[package]]
+name = "bareops-integration-test"
+version = "0.1.0"
+dependencies = [
+ "bareops-lang",
+ "miette",
 ]
 
 [[package]]
