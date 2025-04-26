@@ -167,6 +167,7 @@ name = "bareops"
 version = "0.1.0"
 dependencies = [
  "bareops-conn",
+ "bareops-error",
  "bareops-lang",
  "clap",
  "env_logger",
@@ -199,6 +200,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "bareops-error"
+version = "0.1.0"
+dependencies = [
+ "miette",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "bareops-execute"
+version = "0.1.0"
+dependencies = [
+ "bareops-error",
+ "bareops-inventory",
+ "bareops-lang",
+]
+
+[[package]]
 name = "bareops-hello-world-plugin"
 version = "0.1.0"
 dependencies = [
@@ -212,6 +230,10 @@ dependencies = [
  "bareops-lang",
  "miette",
 ]
+
+[[package]]
+name = "bareops-inventory"
+version = "0.1.0"
 
 [[package]]
 name = "bareops-lang"
