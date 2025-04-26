@@ -1,5 +1,5 @@
+use bareops_error::BareopsError;
 use bareops_lang::Task;
-use error::BareopsError;
 use std::path::Path;
 use wasm_runtime::WasmRuntime;
 use wasmtime::Config;

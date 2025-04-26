@@ -1,6 +1,6 @@
 mod cli;
 
-use bareops::error::BareopsError;
+use bareops_error::BareopsError;
 use miette::{IntoDiagnostic, NamedSource};
 use std::fs::read_to_string;
 use std::path::PathBuf;

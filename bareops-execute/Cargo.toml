@@ -1,0 +1,9 @@
+[package]
+name = "bareops-execute"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bareops-inventory = { path = "../bareops-inventory" }
+bareops-lang = { path = "../bareops-lang" }
+bareops-error = { path = "../bareops-error" }
