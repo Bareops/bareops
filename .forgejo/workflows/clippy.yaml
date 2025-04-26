@@ -1,0 +1,27 @@
+on:
+  pull_request: {}
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  clippy:
+    runs-on: docker
+    steps:
+      - name: Check out repository code
+        uses: https://code.forgejo.org/actions/checkout@v3
+
+      - name: Set up Rust toolchain
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+
+      - name: Check format
+        run: |
+          source $HOME/.cargo/env
+          cargo fmt --check
+
+      - name: Run Clippy
+        run: |
+          source $HOME/.cargo/env
+          cargo clippy
