@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 bareops-lang = { path = "../bareops-lang" }
+bareops-conn = { path = "../bareops-conn" }
+bareops-error = { path = "../bareops-error" }
 miette = { version = "7.5", features = ["fancy"] }
 wasmtime = "31.0"
 wasmtime-wasi = "31.0"

@@ -1,4 +1,4 @@
-use crate::error::BareopsError;
+use bareops_error::BareopsError;
 use bareops_lang::{Identifier, PluginOption, Value};
 use log::{debug, trace};
 use std::collections::HashMap;
