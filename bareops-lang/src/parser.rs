@@ -1,8 +1,8 @@
 use crate::ast::{Identifier, PluginBuilder, PluginOption, Tag, Task, TaskBuilder, Value};
 use miette::{Diagnostic, NamedSource, Result, SourceSpan};
+use pest::Parser;
 use pest::error::{Error, InputLocation, LineColLocation};
 use pest::iterators::Pairs;
-use pest::Parser;
 use pest_derive::Parser;
 use thiserror::Error;
 

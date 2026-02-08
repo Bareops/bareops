@@ -1,5 +1,5 @@
-use bareops_plugin_api::bindings::*;
 use bareops_plugin_api::Plugin;
+use bareops_plugin_api::bindings::*;
 
 struct AzurePlugin;
 

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use thiserror::Error;
 use wasmtime::component::{Component, Linker, ResourceTable, Val};
 use wasmtime::{Config, Engine, Store};
-use wasmtime_wasi::{IoView, WasiCtx, WasiCtxBuilder, WasiView};
+use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
 
 #[derive(Error, Debug)]
 pub enum WasmRuntimeError {
@@ -21,15 +21,12 @@ struct WasmState {
     table: ResourceTable,
 }
 
-impl IoView for WasmState {
-    fn table(&mut self) -> &mut ResourceTable {
-        &mut self.table
-    }
-}
-
 impl WasiView for WasmState {
-    fn ctx(&mut self) -> &mut WasiCtx {
-        &mut self.ctx
+    fn ctx(&mut self) -> WasiCtxView<'_> {
+        WasiCtxView {
+            ctx: &mut self.ctx,
+            table: &mut self.table,
+        }
     }
 }
 
@@ -56,7 +53,7 @@ impl<'a> WasmRuntime<'a> {
             Engine::new(&config).map_err(|e| WasmRuntimeError::EngineCreation(e.to_string()))?;
 
         let mut linker = Linker::<WasmState>::new(&engine);
-        wasmtime_wasi::add_to_linker_async(&mut linker)
+        wasmtime_wasi::p2::add_to_linker_async(&mut linker)
             .map_err(|e| WasmRuntimeError::EngineCreation(e.to_string()))?;
 
         let mut builder = WasiCtxBuilder::new();

@@ -1,5 +1,5 @@
-use bareops_plugin_api::bindings::*;
 use bareops_plugin_api::Plugin;
+use bareops_plugin_api::bindings::*;
 
 // Define a new struct for your plugin. Name doesn't matter
 struct HelloWorldPlugin;

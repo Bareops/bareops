@@ -1,11 +1,11 @@
 [package]
 name = "bareops-lang"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 miette = { version = "7.6", features = ["fancy"] }
 pest = { version = "2.8", features = ["miette-error"] }
 pest_derive = "2.8"
 thiserror = "2.0"
-log = "0.4.27"
+log = "0.4.29"

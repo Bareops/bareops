@@ -5,4 +5,4 @@ pub mod bindings {
 }
 
 // Reexport the Guest trait as a different name. entirely optional
-pub use crate::bindings::{export, Guest as Plugin};
+pub use crate::bindings::{Guest as Plugin, export};
