@@ -6,8 +6,8 @@ edition = "2024"
 [dependencies]
 bareops-lang = { path = "../bareops-lang" }
 miette = { version = "7.6", features = ["fancy"] }
-wasmtime = "41.0"
-wasmtime-wasi = "41.0"
+wasmtime = "48.0"
+wasmtime-wasi = "48.0"
 tokio = { version = "1.49", features = ["rt", "rt-multi-thread", "macros"] }
 thiserror = "2.0"
 clap = "4.5"
